@@ -1,16 +1,6 @@
 import nodemailer from "nodemailer";
 
 export async function POST(req) {
-  if (req.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-    });
-  }
 
   try {
     const { to, subject, text, filename, fileurl } = await req.json();
@@ -19,7 +9,10 @@ export async function POST(req) {
     if (!to || !subject || !text) {
       return new Response(
         JSON.stringify({ error: "Required fields: to, subject, text" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*", // Allow all origins (or specify your domain)
+        }, }
       );
     }
 
@@ -62,15 +55,15 @@ export async function POST(req) {
     return new Response(
       JSON.stringify({ message: "Email sent successfully" }),
       { status: 200, headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*", // Allow all origins
-        }, }
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*", // Allow all origins (or specify your domain)
+      }, }
     );
   } catch (error) {
     console.error("Error sending email:", error.message);
     return new Response(
       JSON.stringify({ error: "Failed to send email" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json","Access-Control-Allow-Origin": "*", } }
     );
   }
 }
