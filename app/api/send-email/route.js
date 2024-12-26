@@ -1,6 +1,17 @@
 import nodemailer from "nodemailer";
 
 export async function POST(req) {
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
+  }
+
   try {
     const { to, subject, text, filename, fileurl } = await req.json();
 
@@ -50,7 +61,10 @@ export async function POST(req) {
     await transporter.sendMail(mailOptions);
     return new Response(
       JSON.stringify({ message: "Email sent successfully" }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      { status: 200, headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*", // Allow all origins
+        }, }
     );
   } catch (error) {
     console.error("Error sending email:", error.message);
